@@ -15,7 +15,7 @@ import { FollowsModule } from './follows/follows.module';
 import { GroupsModule } from './groups/groups.module';
 import { RelationGroupUserModule } from './relation-group-user/relation-group-user.module';
 import { RelationGroupPostModule } from './relation-group-post/relation-group-post.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { ExceptionsLoggerFilter } from './exception/exceptions-logger-filter';
 
@@ -23,15 +23,19 @@ config();
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: ['dist/**/**.entity{.ts,.js}'],
-      synchronize: false,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
+        entities: ['dist/**/**.entity{.ts,.js}'],
+        synchronize: false,
+      }),
     }),
     ConfigModule.forRoot(),
     AuthModule,
