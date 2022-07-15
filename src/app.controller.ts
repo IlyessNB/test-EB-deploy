@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Req,
-  SerializeOptions,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -20,14 +19,12 @@ import { Express } from 'express';
 import { CreatePictureDto } from './posts/post-body/pictures/dto/create-picture.dto';
 
 @Controller('api/')
-// @SerializeOptions({
-//   strategy: 'excludeAll',
-//})
 export class AppController {
   constructor(private usersService: UsersService) {}
 
   @Get('users')
   findAllUser() {
+    console.log('test');
     return this.usersService.getAll();
   }
 
