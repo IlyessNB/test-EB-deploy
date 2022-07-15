@@ -5,7 +5,6 @@ import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserNotFoundByMailException } from './exception/user-not-found-by-mail-exception';
 import { UserNotFoundByIdException } from './exception/user-not-found-by-id-exception';
-import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PicturesService } from '../posts/post-body/pictures/pictures.service';
 import { CreatePictureDto } from '../posts/post-body/pictures/dto/create-picture.dto';
@@ -40,7 +39,8 @@ export class UsersService {
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: number) {
-    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 5);
+    const currentHashedRefreshToken = refreshToken;
+    //const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 5);
     await this.userRepository.update(userId, { currentHashedRefreshToken });
   }
 
@@ -66,10 +66,11 @@ export class UsersService {
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
     const user = await this.findByUserId(userId);
 
-    const isRefreshTokenMatching = await bcrypt.compare(
-      refreshToken,
-      user.currentHashedRefreshToken,
-    );
+    const isRefreshTokenMatching = true;
+    // const isRefreshTokenMatching = await bcrypt.compare(
+    //   refreshToken,
+    //   user.currentHashedRefreshToken,
+    // );
 
     if (isRefreshTokenMatching) {
       return user;

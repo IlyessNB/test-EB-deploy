@@ -3,7 +3,6 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { RegisterDto } from './dto/register.dto';
-import { compare, hash } from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './token-payload.interface';
 
@@ -33,7 +32,10 @@ export class AuthService {
     plainTextPassword: string,
     hashedPassword: string,
   ) {
-    const isPasswordMatching = await compare(plainTextPassword, hashedPassword);
+    let isPasswordMatching = false;
+    if (plainTextPassword == hashedPassword) {
+      isPasswordMatching = true;
+    }
     if (!isPasswordMatching) {
       throw new HttpException(
         'Wrong credentials provided',
@@ -67,7 +69,8 @@ export class AuthService {
   }
 
   async register(registrationData: RegisterDto) {
-    const hashedPassword = await hash(registrationData.password, 5);
+    //const hashedPassword = await hash(registrationData.password, 5);
+    const hashedPassword = registrationData.password;
     try {
       return await this.userService.createUser({
         ...registrationData,
